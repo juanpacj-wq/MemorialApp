@@ -107,8 +107,13 @@ const Galeria = () => {
                 <p className="text-sm text-gray-500">🕯️ Fallecimiento: {arbol.fallecimiento || "-"}</p>
                 
                 <div className="mt-4 grid grid-cols-2 gap-2">
-                  <button className="bg-green-600 text-white p-2 rounded-md hover:bg-green-700 text-sm">🌱 Plantar árbol</button>
-                  <button onClick={() => generarQR(arbol.id)} className="bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 text-sm">📱 Generar QR</button>
+                  <button
+                        onClick={() => router.push(`/ver-arbol/${arbol.id}`)}
+                        className="bg-green-600 text-white p-2 rounded-md hover:bg-green-700 text-sm"
+                        >
+                        🌱 Plantar árbol
+                        </button>
+<button onClick={() => generarQR(arbol.id)} className="bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 text-sm">📱 Generar QR</button>
                   <button onClick={() => router.push(`/editar-arbol/${arbol.id}`)} className="bg-yellow-500 text-black p-2 rounded-md hover:bg-yellow-600 text-sm">✏️ Editar</button>
                   <button onClick={() => eliminarArbol(arbol.id, arbol.imagenes)} className="bg-red-600 text-white p-2 rounded-md hover:bg-red-700 text-sm">🗑️ Eliminar</button>
                 </div>

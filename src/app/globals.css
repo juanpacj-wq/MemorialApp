@@ -1,8 +1,114 @@
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
+@import "tailwindcss/preflight";
+@tailwind utilities;
+@tailwind utilities;
 
-body {
-  background-color: #f4f4f4;
-  color: #333;
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@layer base {
+  :root {
+    --font-sans: var(--font-geist-sans);
+    --font-mono: var(--font-geist-mono);
+    /* Updated color palette to memorial app theme with emerald primary and soft neutrals */
+    --background: 220 13% 97%; /* Light gray background for serenity */
+    --foreground: 215 25% 27%; /* Dark gray for primary text */
+    --card: 0 0% 100%; /* Pure white for card backgrounds */
+    --card-foreground: 215 25% 27%; /* Dark gray for card text */
+    --popover: 0 0% 100%; /* White for popovers */
+    --popover-foreground: 215 25% 27%; /* Dark gray for popover text */
+    --primary: 160 84% 39%; /* Emerald primary color symbolizing growth */
+    --primary-foreground: 0 0% 100%; /* White text on primary */
+    --secondary: 160 84% 55%; /* Lighter emerald for secondary actions */
+    --secondary-foreground: 0 0% 100%; /* White text on secondary */
+    --muted: 220 13% 97%; /* Light gray for muted elements */
+    --muted-foreground: 215 16% 47%; /* Medium gray for muted text */
+    --accent: 160 84% 55%; /* Emerald accent for highlights */
+    --accent-foreground: 0 0% 100%; /* White text on accent */
+    --destructive: 0 84% 60%; /* Red for destructive actions */
+    --destructive-foreground: 0 0% 100%; /* White text on destructive */
+    --border: 220 13% 91%; /* Light gray borders */
+    --input: 0 0% 100%; /* White input backgrounds */
+    --ring: 160 84% 39%; /* Emerald focus ring */
+    --chart-1: 160 84% 39%; /* Primary emerald for charts */
+    --chart-2: 160 84% 55%; /* Secondary emerald for charts */
+    --chart-3: 25 95% 53%; /* Orange accent for charts */
+    --chart-4: 0 84% 60%; /* Red accent for charts */
+    --chart-5: 33 100% 50%; /* Orange variant for charts */
+    --radius: 0.75rem; /* Slightly larger radius for modern feel */
+    --sidebar-background: 0 0% 100%; /* White sidebar */
+    --sidebar-foreground: 215 25% 27%; /* Dark gray sidebar text */
+    --sidebar-primary: 160 84% 39%; /* Emerald sidebar highlights */
+    --sidebar-primary-foreground: 0 0% 100%; /* White text on sidebar primary */
+    --sidebar-accent: 160 84% 55%; /* Emerald sidebar accents */
+    --sidebar-accent-foreground: 0 0% 100%; /* White text on sidebar accents */
+    --sidebar-border: 220 13% 91%; /* Light gray sidebar borders */
+    --sidebar-ring: 160 84% 39%; /* Emerald sidebar focus ring */
+  }
+
+  .dark {
+    --background: 215 28% 17%; /* Dark background */
+    --foreground: 210 20% 98%; /* Light text */
+    --card: 215 28% 17%; /* Dark card background */
+    --card-foreground: 210 20% 98%; /* Light card text */
+    --popover: 215 28% 17%; /* Dark popover */
+    --popover-foreground: 210 20% 98%; /* Light popover text */
+    --primary: 160 84% 39%; /* Keep emerald primary in dark mode */
+    --primary-foreground: 0 0% 100%; /* White text on primary */
+    --secondary: 215 28% 25%; /* Darker secondary */
+    --secondary-foreground: 210 20% 98%; /* Light text on secondary */
+    --muted: 215 28% 25%; /* Dark muted background */
+    --muted-foreground: 217 10% 64%; /* Medium gray muted text */
+    --accent: 160 84% 55%; /* Brighter emerald accent for dark mode */
+    --accent-foreground: 0 0% 100%; /* White text on accent */
+    --destructive: 0 63% 31%; /* Darker red for dark mode */
+    --destructive-foreground: 210 20% 98%; /* Light text on destructive */
+    --border: 215 28% 25%; /* Dark borders */
+    --input: 215 28% 25%; /* Dark input backgrounds */
+    --ring: 160 84% 55%; /* Brighter emerald ring for dark mode */
+    --chart-1: 160 84% 55%; /* Brighter emerald for dark charts */
+    --chart-2: 160 84% 39%; /* Primary emerald for dark charts */
+    --chart-3: 25 95% 53%; /* Orange for dark charts */
+    --chart-4: 0 84% 60%; /* Red for dark charts */
+    --chart-5: 33 100% 50%; /* Orange variant for dark charts */
+    --sidebar-background: 215 28% 17%; /* Dark sidebar */
+    --sidebar-foreground: 210 20% 98%; /* Light sidebar text */
+    --sidebar-primary: 160 84% 39%; /* Emerald sidebar primary */
+    --sidebar-primary-foreground: 0 0% 100%; /* White text on sidebar primary */
+    --sidebar-accent: 160 84% 55%; /* Brighter emerald sidebar accent */
+    --sidebar-accent-foreground: 0 0% 100%; /* White text on sidebar accent */
+    --sidebar-border: 215 28% 25%; /* Dark sidebar borders */
+    --sidebar-ring: 160 84% 55%; /* Brighter emerald sidebar ring */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+    /* Added font-sans class and removed hardcoded colors */
+  }
+}
+
+/* Added custom utility classes for memorial app styling */
+@layer components {
+  .memorial-card {
+    @apply bg-card text-card-foreground rounded-xl shadow-lg border border-border p-6 transition-all duration-200 hover:shadow-xl;
+  }
+
+  .memorial-button-primary {
+    @apply bg-primary text-primary-foreground px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:opacity-90 focus:ring-2 focus:ring-ring focus:ring-offset-2;
+  }
+
+  .memorial-button-secondary {
+    @apply bg-secondary text-secondary-foreground px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:opacity-90 focus:ring-2 focus:ring-ring focus:ring-offset-2;
+  }
+
+  .memorial-input {
+    @apply bg-input text-foreground border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:border-primary transition-all duration-200;
+  }
 }

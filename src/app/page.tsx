@@ -1,14 +1,13 @@
 "use client"
 
-import type React from "react"
-import { useState } from "react"
+import React, { useState } from "react"
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInWithPopup,
   sendPasswordResetEmail,
 } from "firebase/auth"
-import { auth, googleProvider } from "../src/lib/firebase"
+import { auth, googleProvider } from "../lib/firebase"
 import { useRouter } from "next/navigation"
 
 interface AuthFormData {
@@ -97,7 +96,7 @@ export default function AuthPage() {
               id="email"
               type="email"
               value={email}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
               className="memorial-input"
               placeholder="tu@correo.com"
               required
@@ -112,7 +111,7 @@ export default function AuthPage() {
               id="password"
               type="password"
               value={password}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               className="memorial-input"
               placeholder="••••••••"
               required

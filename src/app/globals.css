@@ -1,5 +1,5 @@
-@import "tailwindcss/preflight";
-@tailwind utilities;
+@tailwind base;
+@tailwind components;
 @tailwind utilities;
 
 @layer utilities {
@@ -110,5 +110,25 @@
 
   .memorial-input {
     @apply bg-input text-foreground border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:border-primary transition-all duration-200;
+  }
+  
+  .memorial-btn-primary {
+    @apply bg-primary text-primary-foreground px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:opacity-90 focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  
+  .memorial-btn-secondary {
+    @apply bg-muted text-muted-foreground px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-muted/80 hover:text-foreground focus:ring-2 focus:ring-ring focus:ring-offset-2;
+  }
+  
+  .memorial-btn-google {
+    @apply bg-white text-gray-800 border border-gray-300 px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:bg-gray-50 flex items-center justify-center;
+  }
+  
+  .memorial-error {
+    @apply p-3 rounded-lg bg-destructive/10 text-destructive text-sm border border-destructive/20;
+  }
+  
+  .memorial-success {
+    @apply p-3 rounded-lg bg-primary/10 text-primary text-sm border border-primary/20;
   }
 }

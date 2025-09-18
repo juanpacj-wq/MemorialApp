@@ -3,7 +3,7 @@
 
 // Token público de Mapbox para desarrollo
 // Registrate en https://www.mapbox.com/ para obtener tu propio token gratuito
-export const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw'
+export const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN
 
 // Estilos de mapa disponibles
 export const MAP_STYLES = {

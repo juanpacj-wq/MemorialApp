@@ -7,6 +7,7 @@ import { onAuthStateChanged } from "firebase/auth"
 import { collection, query, where, getDocs } from "firebase/firestore"
 import Header from "../../components/Header"
 import Breadcrumb from "../../components/Breadcrumb"
+import { MAPBOX_TOKEN } from "../../lib/mapbox-config";
 
 const MapaMemorial = () => {
   const [user, setUser] = useState(null)
@@ -95,7 +96,7 @@ const MapaMemorial = () => {
 
   const createMap = () => {
     // Token público de Mapbox (deberías usar tu propio token en producción)
-    window.mapboxgl.accessToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw'
+    window.mapboxgl.accessToken = MAPBOX_TOKEN;
     
     const map = new window.mapboxgl.Map({
       container: mapContainerRef.current,

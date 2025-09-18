@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { MAPBOX_TOKEN } from "../lib/mapbox-config";
 
 const MapSelector = ({ onLocationSelect, onClose, initialLocation }) => {
   const mapContainerRef = useRef(null)
@@ -40,7 +41,7 @@ const MapSelector = ({ onLocationSelect, onClose, initialLocation }) => {
 
   const initializeMap = () => {
     // Token público de Mapbox (deberías usar tu propio token en producción)
-    window.mapboxgl.accessToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw'
+    window.mapboxgl.accessToken = MAPBOX_TOKEN;
 
     const defaultCenter = initialLocation || { lng: -74.0060, lat: 40.7128 } // NYC por defecto
 

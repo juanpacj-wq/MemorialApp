@@ -1,9 +1,9 @@
-import { Geist_Sans } from "next/font/google"
+import { Inter } from 'next/font/google'
 import "./globals.css"
 
-const geistSans = Geist_Sans({
-  subsets: ["latin"],
-  variable: "--font-geist-sans",
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
 })
 
 export const metadata = {
@@ -13,7 +13,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="es" className={`${geistSans.variable}`}>
+    <html lang="es" className={inter.className}>
       <body className="font-sans antialiased">{children}</body>
     </html>
   )

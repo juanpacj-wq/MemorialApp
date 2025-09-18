@@ -3,7 +3,7 @@ import { getAuth, GoogleAuthProvider } from "firebase/auth"
 import { getFirestore } from "firebase/firestore"
 import { getStorage } from "firebase/storage"
 
-// Tu configuración de Firebase, idealmente guardada en variables de entorno
+// Configuración de Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyCU8P2Fd34ymLWBYWDlQfZuImyJh0gmASA",
   authDomain: "memorialapp-b1ccf.firebaseapp.com",
@@ -16,10 +16,12 @@ const firebaseConfig = {
 // Inicializar Firebase de forma segura (evita reinicializar en el lado del cliente)
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp()
 
+// Inicializar servicios
 const auth = getAuth(app)
 const db = getFirestore(app)
 const storage = getStorage(app)
 
+// Configurar proveedor de Google
 const googleProvider = new GoogleAuthProvider()
 
 export { app, auth, db, storage, googleProvider }

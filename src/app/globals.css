@@ -90,7 +90,6 @@
   }
   body {
     @apply bg-background text-foreground font-sans;
-    /* Added font-sans class and removed hardcoded colors */
   }
 }
 

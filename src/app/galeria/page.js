@@ -90,6 +90,9 @@ const Galeria = () => {
     )
   }
 
+  // Contar árboles públicos
+  const arbolesPublicos = arboles.filter(a => a.esPublico).length
+
   return (
     <div className="min-h-screen bg-background">
       <Header user={user} />
@@ -97,20 +100,49 @@ const Galeria = () => {
       <main className="container mx-auto px-4 py-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-foreground mb-4 text-balance">Tus Árboles Conmemorativos</h2>
-          <p className="text-muted-foreground mb-8 text-balance max-w-2xl mx-auto">
+          <p className="text-muted-foreground mb-4 text-balance max-w-2xl mx-auto">
             Cada árbol es un tributo especial a la memoria de tus seres queridos. Crea, personaliza y comparte estos
             espacios de recuerdo.
           </p>
+          
+          {/* Estadísticas */}
+          <div className="flex justify-center gap-8 mb-8">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-primary">{arboles.length}</div>
+              <div className="text-sm text-muted-foreground">Árboles totales</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-primary">{arbolesPublicos}</div>
+              <div className="text-sm text-muted-foreground">Árboles públicos</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-primary">{arboles.length - arbolesPublicos}</div>
+              <div className="text-sm text-muted-foreground">Árboles privados</div>
+            </div>
+          </div>
 
-          <button
-            onClick={() => router.push("/crear-arbol")}
-            className="memorial-button-primary inline-flex items-center gap-2"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            Crear nuevo árbol
-          </button>
+          <div className="flex justify-center gap-4">
+            <button
+              onClick={() => router.push("/crear-arbol")}
+              className="memorial-button-primary inline-flex items-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              Crear nuevo árbol
+            </button>
+            
+            <button
+              onClick={() => router.push("/mapa-memorial")}
+              className="memorial-button-secondary inline-flex items-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                  d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Ver mapa memorial
+            </button>
+          </div>
         </div>
 
         {arboles.length === 0 ? (
@@ -145,7 +177,28 @@ const Galeria = () => {
               const modeloURL = `https://firebasestorage.googleapis.com/v0/b/memorialapp-b1ccf.firebasestorage.app/o/modelos_3d%2F${encodeURIComponent(arbol.modelo)}?alt=media`
 
               return (
-                <div key={arbol.id} className="memorial-card group">
+                <div key={arbol.id} className="memorial-card group relative">
+                  {/* Indicador de privacidad */}
+                  <div className="absolute top-4 right-4 z-10">
+                    {arbol.esPublico ? (
+                      <div className="bg-primary/90 text-primary-foreground px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1 backdrop-blur-sm">
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                            d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Público
+                      </div>
+                    ) : (
+                      <div className="bg-muted/90 text-muted-foreground px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1 backdrop-blur-sm">
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                        Privado
+                      </div>
+                    )}
+                  </div>
+
                   <div className="relative overflow-hidden rounded-lg mb-4">
                     <ModelViewer src={modeloURL} />
                   </div>
@@ -176,6 +229,21 @@ const Galeria = () => {
                           </svg>
                           <span>Fallecimiento: {arbol.fallecimiento || "No especificado"}</span>
                         </div>
+                        
+                        {/* Mostrar ubicación si es público */}
+                        {arbol.esPublico && arbol.ubicacion && (
+                          <div className="flex items-center gap-2">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            <span className="truncate">
+                              {arbol.ubicacion.direccion || 'Ubicación guardada'}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
 
@@ -245,6 +313,20 @@ const Galeria = () => {
                         Eliminar
                       </button>
                     </div>
+
+                    {/* Botón adicional para ver en mapa si es público */}
+                    {arbol.esPublico && arbol.ubicacion && (
+                      <button
+                        onClick={() => router.push(`/mapa-memorial?arbol=${arbol.id}`)}
+                        className="w-full bg-primary/10 text-primary hover:bg-primary/20 text-sm py-2 px-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                            d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                        </svg>
+                        Ver en mapa memorial
+                      </button>
+                    )}
 
                     <div
                       id={`qr-${arbol.id}`}

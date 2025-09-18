@@ -9,6 +9,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
 import ModelViewer from "../../components/ModelViewer"
 import Header from "../../components/Header"
 import Breadcrumb from "../../components/Breadcrumb"
+import MapSelector from "../../components/MapSelector"
 
 const CrearArbol = () => {
   const [user, setUser] = useState(null)
@@ -22,6 +23,11 @@ const CrearArbol = () => {
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
   const [loading, setLoading] = useState(true)
+  
+  // Nuevos estados para geolocalización y privacidad
+  const [esPublico, setEsPublico] = useState(false)
+  const [ubicacion, setUbicacion] = useState(null)
+  const [mostrarMapa, setMostrarMapa] = useState(false)
   const router = useRouter()
 
   const modelosDisponibles = [
@@ -54,6 +60,27 @@ const CrearArbol = () => {
     return () => unsubscribe()
   }, [router])
 
+  const handleUbicacionActual = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUbicacion({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+            direccion: "Mi ubicación actual"
+          })
+          setMostrarMapa(false)
+        },
+        (error) => {
+          setError("No se pudo obtener tu ubicación actual")
+          console.error(error)
+        }
+      )
+    } else {
+      setError("Tu navegador no soporta geolocalización")
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!user) {
@@ -62,6 +89,10 @@ const CrearArbol = () => {
     }
     if (imagenes.length > 5) {
       setError("Puedes subir un máximo de 5 imágenes.")
+      return
+    }
+    if (esPublico && !ubicacion) {
+      setError("Para hacer el árbol público, debes seleccionar una ubicación.")
       return
     }
 
@@ -79,8 +110,8 @@ const CrearArbol = () => {
         urlsImagenes.push(url)
       }
 
-      // 2. Guardar datos del árbol en Firestore
-      await addDoc(collection(db, "arboles"), {
+      // 2. Guardar datos del árbol en Firestore con nuevos campos
+      const datosArbol = {
         uid: user.uid,
         nombre,
         modelo,
@@ -89,7 +120,18 @@ const CrearArbol = () => {
         cancion,
         imagenes: urlsImagenes,
         creado: serverTimestamp(),
-      })
+        // Nuevos campos
+        esPublico,
+        ubicacion: esPublico && ubicacion ? {
+          lat: ubicacion.lat,
+          lng: ubicacion.lng,
+          direccion: ubicacion.direccion || "",
+          geohash: generarGeohash(ubicacion.lat, ubicacion.lng) // Para búsquedas geográficas eficientes
+        } : null,
+        usuarioNombre: user.displayName || user.email?.split('@')[0] || 'Usuario Anónimo'
+      }
+
+      await addDoc(collection(db, "arboles"), datosArbol)
 
       setSuccess("Árbol guardado correctamente. Redirigiendo a la galería...")
 
@@ -100,6 +142,8 @@ const CrearArbol = () => {
       setFallecimiento("")
       setCancion("")
       setImagenes([])
+      setEsPublico(false)
+      setUbicacion(null)
 
       setTimeout(() => router.push("/galeria"), 2000)
     } catch (error) {
@@ -108,6 +152,15 @@ const CrearArbol = () => {
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  // Función simple para generar geohash (para búsquedas geográficas)
+  const generarGeohash = (lat, lng) => {
+    // Implementación simplificada de geohash para Firebase
+    const precision = 5
+    const latStr = lat.toFixed(precision)
+    const lngStr = lng.toFixed(precision)
+    return `${latStr},${lngStr}`
   }
 
   if (loading) {
@@ -185,6 +238,113 @@ const CrearArbol = () => {
                 <p className="text-xs text-muted-foreground mt-1">
                   Escribe un nombre significativo para este árbol conmemorativo
                 </p>
+              </div>
+
+              {/* Nueva sección de Privacidad y Ubicación */}
+              <div className="space-y-4 p-6 bg-muted/30 rounded-lg">
+                <h3 className="text-sm font-medium text-foreground flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                      d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Privacidad y Ubicación
+                </h3>
+                
+                <div className="flex items-start gap-3">
+                  <input
+                    type="checkbox"
+                    id="esPublico"
+                    checked={esPublico}
+                    onChange={(e) => setEsPublico(e.target.checked)}
+                    className="mt-1 w-4 h-4 text-primary border-border rounded focus:ring-primary"
+                    disabled={isSubmitting}
+                  />
+                  <div className="flex-1">
+                    <label htmlFor="esPublico" className="text-sm font-medium text-foreground cursor-pointer">
+                      Hacer este árbol público
+                    </label>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Los árboles públicos aparecen en el mapa memorial y pueden ser visitados por cualquier persona
+                    </p>
+                  </div>
+                </div>
+
+                {esPublico && (
+                  <div className="space-y-3 mt-4 pt-4 border-t border-border">
+                    <label className="block text-sm font-medium text-foreground">
+                      Ubicación del árbol *
+                    </label>
+                    
+                    {ubicacion && (
+                      <div className="p-3 bg-primary/5 rounded-lg border border-primary/20">
+                        <div className="flex items-start gap-2">
+                          <svg className="w-5 h-5 text-primary mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg>
+                          <div className="flex-1">
+                            <p className="text-sm font-medium text-foreground">Ubicación seleccionada</p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {ubicacion.direccion || `${ubicacion.lat.toFixed(4)}, ${ubicacion.lng.toFixed(4)}`}
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setUbicacion(null)}
+                            className="text-muted-foreground hover:text-destructive"
+                            disabled={isSubmitting}
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={handleUbicacionActual}
+                        className="flex-1 memorial-button-secondary text-sm py-2"
+                        disabled={isSubmitting}
+                      >
+                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        Usar mi ubicación
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setMostrarMapa(true)}
+                        className="flex-1 memorial-button-secondary text-sm py-2"
+                        disabled={isSubmitting}
+                      >
+                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                            d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                        </svg>
+                        Elegir en el mapa
+                      </button>
+                    </div>
+
+                    {mostrarMapa && (
+                      <MapSelector 
+                        onLocationSelect={(loc) => {
+                          setUbicacion(loc)
+                          setMostrarMapa(false)
+                        }}
+                        onClose={() => setMostrarMapa(false)}
+                        initialLocation={ubicacion}
+                      />
+                    )}
+                  </div>
+                )}
               </div>
 
               <div>
